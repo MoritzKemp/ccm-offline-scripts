@@ -1,0 +1,21 @@
+
+
+Send Data url params:
+store="my_store_name"
+dataset[key]=".."
+dataset[foo]="bar"
+...
+callback=ccm.callbacks.callback[uniquenumber]
+
+
+Get Data url params:
+store="my_store_name"
+callbacl=ccm.callbacks.callback[uniquenumber]
+
+
+Delete Data url params:
+store="my_store_name"
+del=".."
+callback=ccm.callbacks.callback[uniquenumber]
+
+
