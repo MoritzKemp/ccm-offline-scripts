@@ -28,30 +28,38 @@ const storesToHandle = [
     'moritz_kemp_cache_testing'
 ];
 
-let responseData = [];
-
-self.jsonpCallback = function(data){
-    responseData.push( JSON.stringify(data) );
-};
+let jsonpCallbacks = {};
+let counter = 0;
+let responseData = {};
 
 self.getDatasetsResponse = function( url ){
-    //store original callback for later use in response
-    const originalCallback = url.searchParams.get("callback");
-    //remove original callback for new jsonp-request
-    url.searchParams.delete("callback");
     return new Promise(function(resolve, reject){
+                //store original callback for later use in response
+                const originalCallback = url.searchParams.get("callback");
+                //remove original callback for new jsonp-request
+                url.searchParams.delete("callback");
+                //prepare unique jsonp-callback
+                const callbackId = "n" + counter++; 
+                jsonpCallbacks[callbackId] = function(data){
+                    responseData[callbackId] = JSON.stringify(data);
+                };
                 importScripts(
                     url.protocol +
                     url.hostname + 
                     url.pathname + 
                     "?" +
                     url.searchParams.toString() +
-                    "&callback=jsonpCallback"
+                    "&callback=jsonpCallbacks."+callbackId
                 );
+                //create response for original referrer
                 let response = new Response(
                     originalCallback +
-                    "(" + responseData.pop() + ")"
+                    "(" + responseData[callbackId] + ")"
                 );
+                //cleanup
+                delete jsonpCallbacks[callbackId];
+                delete responseData[callbackId];
+                
                 resolve(response);
             }).then(function( response ){
                 return response;
