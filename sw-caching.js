@@ -74,10 +74,29 @@ self.addEventListener('fetch', event=>{
         !/&dataset/.test(originalUrl.search) &&
         !originalUrl.searchParams.has("del")
     ){
-        console.log("Catch fetch all");
+        
         event.respondWith(
-            self.getDatasetsResponse( originalUrl )
+            fetch(
+                new Request(
+                    event.request,
+                    {
+                        mode: 'cors'
+                    }
+                )
+            ).then( function( response ){
+                console.log( response );
+            })
         );
+//          event.respondWith(
+//            fetch(event.request).then(function( response ){
+//                console.log(response);
+//                return response;
+//            })
+//          );
+//        console.log("Catch fetch all");
+//        event.respondWith(
+//            self.getDatasetsResponse( originalUrl )
+//        );
     }
     
     if( 
